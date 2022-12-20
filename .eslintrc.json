@@ -34,7 +34,11 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-expressions": "off"
       }
     },
     {
