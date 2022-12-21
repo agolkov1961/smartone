@@ -1,0 +1,7 @@
+:host::ng-deep {
+  .p-panelmenu .p-panelmenu-header.p-highlight > a,
+  .p-element a,
+  .p-panelmenu .p-panelmenu-header:not(.p-highlight):not(.p-disabled) a:hover {
+    color: var(--primary-color);
+  }
+}
