@@ -26,7 +26,7 @@ export class ProductsSidebarComponent implements OnInit {
     console.log(event.originalEvent.type);
     const isItemClick: boolean = event.originalEvent?.type === 'click';
     if (isItemClick) {
-      this.router.navigate([event.item.id], {queryParams: { page: 'start' },queryParamsHandling: 'merge'});
+      this.router.navigate(['/products/' + event.item.id], {queryParams: { page: 'start' },queryParamsHandling: 'merge'});
     }
   }
 

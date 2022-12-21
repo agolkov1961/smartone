@@ -1,21 +1,25 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { Page404Component } from './page404/page404.component';
 
 const routes: Routes = [
   {
+    path: 'products',
+    loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
+  },
+  {
     path: '',
-    redirectTo: 'all',
+    redirectTo: 'products',
     pathMatch: 'full'
   },
   {
-    path: 'all',
-    loadChildren: () => import('./products-list/products-list.module').then((m) => m.ProductsListModule),
+    path: 'page404',
+    component: Page404Component,
   },
   {
-    path: 'selected',
-    loadChildren: () => import('./products-list/products-list.module').then((m) => m.ProductsListModule),
-  },
-
+    path: '**',
+    redirectTo: 'page404',
+  }
 ];
 
 @NgModule({

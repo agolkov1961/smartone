@@ -1,16 +1,1 @@
-<div class="products--wrapper flex flex-column">
-
-  <div class="products--header flex flex-row align-items-center justify-content-start">
-    <h2 class="products--title flex flex-grow-1 align-items-center justify-content-center">{{title}}</h2>
-    <button pButton pRipple type="button"
-            (click)="handleAddProductButtonClick()"
-            class="flex p-button-outlined"
-            label="Product" icon="pi pi-plus" iconPos="left"></button>
-  </div>
-
-  <div class="products--content flex flex-row align-items-start">
-    <div class="products--sidebar flex"><app-products-sidebar></app-products-sidebar></div>
-    <div class="products--list flex flex-grow-1"></div>
-<!--    <app-products-list></app-products-list>-->
-  </div>
-</div>
+<router-outlet></router-outlet>
