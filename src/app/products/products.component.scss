@@ -1,0 +1,15 @@
+.products {
+  &--wrapper {
+    height: 100%;
+    width: 100%;
+    padding: 10px 15px;
+  }
+
+  &--title {
+    font-family: var(--font-family);
+    color: var(--text-color);
+  }
+  &--list {
+    margin-left: 15px;
+  }
+}

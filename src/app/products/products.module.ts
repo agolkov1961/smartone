@@ -4,6 +4,7 @@ import { ProductsComponent } from './products.component';
 import { ProductsSidebarModule } from './sidebar/sidebar.module';
 import { ButtonModule } from 'primeng/button';
 import { ProductsRoutingModule } from './products-routing.module';
+import { ProductsListModule } from './products-list/products-list.module';
 
 
 
@@ -15,6 +16,7 @@ import { ProductsRoutingModule } from './products-routing.module';
     CommonModule,
     ProductsRoutingModule,
     ProductsSidebarModule,
+    ProductsListModule,
     ButtonModule
   ],
   exports: [

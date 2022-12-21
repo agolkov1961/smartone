@@ -14,13 +14,17 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
-        path: 'all',
+        path: ':mode',
         component: ProductsListComponent,
       },
-      {
-        path: 'selected',
-        component: ProductsListComponent,
-      }
+      // {
+      //   path: 'all',
+      //   component: ProductsListComponent,
+      // },
+      // {
+      //   path: 'selected',
+      //   component: ProductsListComponent,
+      // }
     ]
   }
 ];
