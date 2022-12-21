@@ -1,4 +1,29 @@
-<div class="products-list--wrapper" *ngIf="!!this.productsListMode">
-
+<div class="products-list--wrapper" *ngIf="!!productsListMode">
+  <p-table [value]="products" styleClass="p-datatable-gridlines" sortMode="multiple"
+           [paginator]="true" [rows]="itemsPerPage" [rowsPerPageOptions]="[5, 10,20]" [totalRecords]="totalItems"
+           [lazy]="true" (onLazyLoad)="loadProductsLazy($event)">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Title</th>
+        <th>Brand</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th *ngIf="productsListMode===productsListModeEnum.All">Selected</th>
+        <th *ngIf="productsListMode===productsListModeEnum.All">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>{{product.title}}</td>
+        <td>{{product.brand}}</td>
+        <td>{{product.category}}</td>
+        <td>{{product.description}}</td>
+        <td>{{product.price}}</td>
+        <td *ngIf="productsListMode===productsListModeEnum.All">{{product.isSelected}}</td>
+        <td *ngIf="productsListMode===productsListModeEnum.All">...</td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 
