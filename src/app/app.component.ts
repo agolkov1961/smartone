@@ -7,5 +7,9 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  title = 'smartone';
+  title = 'Test SmartOne';
+
+  handleAddProductButtonClick(): void {
+    console.log('click');
+  }
 }
