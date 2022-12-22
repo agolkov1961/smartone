@@ -4,6 +4,7 @@ import { ProductsListComponent } from './products-list.component';
 import { TableModule } from 'primeng/table';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {ButtonModule} from 'primeng/button';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import {ButtonModule} from 'primeng/button';
     CommonModule,
     TableModule,
     OverlayPanelModule,
-    ButtonModule
+    ButtonModule,
+    ConfirmDialogModule
   ],
   exports: [ProductsListComponent]
 })

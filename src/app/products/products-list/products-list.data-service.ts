@@ -12,4 +12,8 @@ export class ProductsListDataService {
     const order: string = sortField.order === 'desc' ? '-' : '';
     return this.httpService.get(`products?limit=${itemsPerPage}&skip=${firstItem}&ordering=${order}${sortField.field}`);
   }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.httpService.delete(`product/${id}`);
+  }
 }

@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Subject, takeUntil} from 'rxjs';
+import {Subject, takeUntil, tap} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductsListItem} from './products-list.model';
 import {ProductsListDataService} from './products-list.data-service';
-import {LazyLoadEvent} from 'primeng/api';
+import {ConfirmationService, LazyLoadEvent} from 'primeng/api';
 
 @Component({
   templateUrl: './products-list.component.html',
@@ -18,21 +18,6 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   itemsPerPage: number = 10;
   totalItems: number = 0;
   firstItem: number = 0;
-  // actionProductItems: Array<MenuItem> = [
-  //   {
-  //     label: 'Edit',
-  //     icon:'pi pi-fw pi-pencil',
-  //     command: this.editItemClick.bind(this)
-  //   },
-  //   {
-  //     label: 'Delete',
-  //     icon:'pi pi-fw pi-trash'
-  //   },
-  //   {
-  //     label: 'Set image',
-  //     icon:'pi pi-fw pi-image'
-  //   }
-  // ];
   private readonly destroy$: Subject<void> = new Subject();
   private sortField: {field: string, order: 'asc' | 'desc'} = {field: 'title', order: 'asc'};
 
@@ -40,6 +25,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: ProductsListDataService,
+    private confirmationService: ConfirmationService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -98,7 +84,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
           this.totalItems = response.total;
           this.changeDetectorRef.detectChanges();
         },
-        error: () => undefined // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! handler?
+        error: () => alert('Cann\'t read product list')
       });
   }
 
@@ -113,7 +99,39 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   deleteProductClick(product: IProductsListItem): void {
-    console.log(product);
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete the selected product?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'deleteProductDialog',
+      accept: () => this.deleteProduct(product.id)
+    });
+  }
+
+  private deleteProduct(id: number): void {
+    this.dataService.deleteProduct(id)
+      .pipe(
+        tap(() => {
+          if (this.products.length > 1) this.refreshProductsList();
+          else {
+            let newFirstItem: number = this.firstItem - this.itemsPerPage;
+            if (newFirstItem < 0) newFirstItem = 0;
+            this.router.navigate([], {
+              queryParams: {
+                first: newFirstItem,
+                limit: this.itemsPerPage,
+                sort: this.sortField.field,
+                order: this.sortField.order
+              },
+              queryParamsHandling: 'merge'
+            })
+          }
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        error: () => alert('Cann\'t delete product')
+      });
   }
 
   setImageClick(product: IProductsListItem): void {
