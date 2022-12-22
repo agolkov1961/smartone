@@ -17,9 +17,10 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   products: Array<IProductsListItem> = [];
   itemsPerPage: number = 10;
   totalItems: number = 0;
+  firstItem: number = 0;
 
-  private currentPage: number = 0;
   private readonly destroy$: Subject<void> = new Subject();
+  private sortField: {field: string, order: 'asc' | 'desc'} = {field: 'title', order: 'asc'};
 
   constructor(
     private router: Router,
@@ -39,6 +40,10 @@ export class ProductsListComponent implements OnInit, OnDestroy {
 
   loadProductsLazy(event: LazyLoadEvent): void {
     console.log(event);
+    this.router.navigate([], {
+      queryParams: { first: event.first, limit: event.rows, sort: event.sortField, 'order': (event.sortOrder || 1) < 0 ? 'desc' : 'asc' },
+      queryParamsHandling: 'merge'
+    });
   }
 
   private listenRouter(): void {
@@ -58,8 +63,12 @@ export class ProductsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (params: Params) => {
-          if (!isNaN(+params['page'])) {
-            this.currentPage = +params['page'];
+          if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
+            ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
+            ['asc', 'desc'].find(s => s === params['order'])) {
+            this.firstItem = +params['first'];
+            this.itemsPerPage = +params['limit'];
+            this.sortField = {field: params['sort'], order: params['order']}
             this.refreshProductsList();
           }
         }
@@ -67,7 +76,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   private refreshProductsList(): void {
-    this.dataService.getProducts(this.currentPage, this.itemsPerPage)
+    this.dataService.getProducts(this.firstItem, this.itemsPerPage, this.sortField)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: IGetProductsList) => {
