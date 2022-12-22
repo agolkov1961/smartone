@@ -4,6 +4,7 @@ export enum EProductsListMode {
 }
 
 export interface IProductsListItem {
+  id: number;
   title: string;
   brand: string;
   category: string;

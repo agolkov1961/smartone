@@ -18,7 +18,21 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   itemsPerPage: number = 10;
   totalItems: number = 0;
   firstItem: number = 0;
-
+  // actionProductItems: Array<MenuItem> = [
+  //   {
+  //     label: 'Edit',
+  //     icon:'pi pi-fw pi-pencil',
+  //     command: this.editItemClick.bind(this)
+  //   },
+  //   {
+  //     label: 'Delete',
+  //     icon:'pi pi-fw pi-trash'
+  //   },
+  //   {
+  //     label: 'Set image',
+  //     icon:'pi pi-fw pi-image'
+  //   }
+  // ];
   private readonly destroy$: Subject<void> = new Subject();
   private sortField: {field: string, order: 'asc' | 'desc'} = {field: 'title', order: 'asc'};
 
@@ -94,4 +108,16 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     return !!legalValues.find(v => v === mode);
   }
 
+  editProductClick(product: IProductsListItem): void {
+    console.log(product);
+  }
+
+  deleteProductClick(product: IProductsListItem): void {
+    console.log(product);
+  }
+
+  setImageClick(product: IProductsListItem): void {
+    console.log(product);
+    alert('not implemented yet')
+  }
 }
