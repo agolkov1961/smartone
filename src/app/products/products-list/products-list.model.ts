@@ -21,3 +21,8 @@ export interface IGetProductsList {
   skip: number;
   total: number;
 }
+
+export interface IProductFormOptions {
+  product?: IProductsListItem;
+  header: string;
+}

@@ -32,7 +32,6 @@
                       class="p-button-text" icon="pi pi-fw pi-trash" iconPos="left"></button>
               <button pButton type="button" label="Set image" (click)="opAction.hide();setImageClick(product)"
                       class="p-button-text" icon="pi pi-fw pi-image" iconPos="left"></button>
-<!--              <p-panelMenu [model]="actionProductItems" [style]="{'width':'150px'}"></p-panelMenu>-->
             </ng-template>
           </p-overlayPanel>
         </td>
@@ -42,3 +41,6 @@
 </div>
 
 <p-confirmDialog [style]="{width: '40vw'}" key="deleteProductDialog" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
+
+<app-product-form *ngIf="visibleProductForm" [options]="productFormOptions" (save)="saveProduct($event)" (hide)="hideDialog()"></app-product-form>
+

@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Subject, takeUntil, tap} from 'rxjs';
-import {EProductsListMode, IGetProductsList, IProductsListItem} from './products-list.model';
+import {Observable, Subject} from 'rxjs';
+import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
 import {ProductsListDataService} from './products-list.data-service';
 import {ConfirmationService, LazyLoadEvent} from 'primeng/api';
+import {takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   templateUrl: './products-list.component.html',
@@ -20,6 +21,8 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   firstItem: number = 0;
   private readonly destroy$: Subject<void> = new Subject();
   private sortField: {field: string, order: 'asc' | 'desc'} = {field: 'title', order: 'asc'};
+  productFormOptions: IProductFormOptions = {header: ''};
+  visibleProductForm: boolean = false;
 
   constructor(
     private router: Router,
@@ -39,7 +42,6 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   loadProductsLazy(event: LazyLoadEvent): void {
-    console.log(event);
     this.router.navigate([], {
       queryParams: { first: event.first, limit: event.rows, sort: event.sortField, 'order': (event.sortOrder || 1) < 0 ? 'desc' : 'asc' },
       queryParamsHandling: 'merge'
@@ -95,7 +97,28 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   editProductClick(product: IProductsListItem): void {
-    console.log(product);
+    this.productFormOptions = {product, header: `Edit product ${product.title}`};
+    this.visibleProductForm = true;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  saveProduct(product: IProductsListItem): void {
+    const obs: Observable<void> = !!product.id
+      ? this.dataService.patchProduct(product.id, product)
+      : this.dataService.postProduct(product);
+    obs.pipe(
+      tap(() => this.refreshProductsList())
+    ).subscribe({
+      next: () => this.hideDialog(),
+      error: () => alert('Cann\'t post or put product')
+    })
+  }
+
+  hideDialog(): void {
+    if (this.visibleProductForm) {
+      this.visibleProductForm = false;
+      this.changeDetectorRef.detectChanges();
+    }
   }
 
   deleteProductClick(product: IProductsListItem): void {

@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { Page404Component } from './page404/page404.component';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {ConfirmationService} from 'primeng/api';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,9 @@ import {ConfirmationService} from 'primeng/api';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [ConfirmationService],
   bootstrap: [AppComponent]

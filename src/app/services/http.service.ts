@@ -21,6 +21,10 @@ export class HttpService {
     return this.http.put(`${this.site}/${url}`, body);
   }
 
+  public patch(url: string, body: any): Observable<any> {
+    return this.http.patch(`${this.site}/${url}`, body);
+  }
+
   public delete(url: string): Observable<any> {
     return this.http.delete(`${this.site}/${url}`);
   }
