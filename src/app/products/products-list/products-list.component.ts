@@ -4,13 +4,14 @@ import {Observable, Subject} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
 import {ConfirmationService, LazyLoadEvent, MessageService} from 'primeng/api';
 import {takeUntil, tap} from 'rxjs/operators';
-import {ProductsListLocalStorageService} from './products-list.ls-service';
-import {ProductsListDataService} from './products-list.data-service';
+import {ProductsListLocalStorageService} from './services/products-list.ls-service';
+import {ProductsListDataService} from './services/products-list.data-service';
+import {ProductsListHelperService} from './services/products-list.helper-service';
 
 @Component({
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.scss'],
-  providers: [MessageService, ProductsListDataService, ProductsListLocalStorageService],
+  providers: [MessageService, ProductsListDataService, ProductsListLocalStorageService, ProductsListHelperService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent implements OnInit, OnDestroy {
@@ -18,7 +19,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   productsListModeEnum: typeof EProductsListMode = EProductsListMode;
   products: Array<IProductsListItem> = [];
   itemsPerPage: number = 0;
-  sortField: {field: string, order: 'asc' | 'desc'} = {field: '', order: 'asc'};
+  sortField: { field: string, order: 'asc' | 'desc' } = {field: '', order: 'asc'};
   totalItems: number = 0;
   firstItem: number = 0;
   private readonly destroy$: Subject<void> = new Subject();
@@ -29,8 +30,8 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: ProductsListDataService,
-    private lsService: ProductsListLocalStorageService,
     private confirmationService: ConfirmationService,
+    private helperService: ProductsListHelperService,
     private messageService: MessageService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
@@ -46,7 +47,12 @@ export class ProductsListComponent implements OnInit, OnDestroy {
 
   loadProductsLazy(event: LazyLoadEvent): void {
     this.router.navigate([], {
-      queryParams: { first: event.first, limit: event.rows, sort: event.sortField, 'order': (event.sortOrder || 1) < 0 ? 'desc' : 'asc' },
+      queryParams: {
+        first: event.first,
+        limit: event.rows,
+        sort: event.sortField,
+        'order': (event.sortOrder || 1) < 0 ? 'desc' : 'asc'
+      },
       queryParamsHandling: 'merge'
     });
   }
@@ -69,34 +75,31 @@ export class ProductsListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (params: Params) => {
           if (+params['limit'] === 0) {
-            this.router.navigate([], {queryParams: { limit: 10}, queryParamsHandling: 'merge'});
+            this.router.navigate([], {queryParams: {limit: 10}, queryParamsHandling: 'merge'});
           } else if (!params['sort']) {
-            this.router.navigate([], {queryParams: { sort: 'title'}, queryParamsHandling: 'merge'});
-          }
-          else {
+            this.router.navigate([], {queryParams: {sort: 'title'}, queryParamsHandling: 'merge'});
+          } else {
             if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
               ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
               ['asc', 'desc'].find(s => s === params['order'])) {
-                this.firstItem = +params['first'];
-                this.itemsPerPage = +params['limit'];
-                this.sortField = {field: params['sort'], order: params['order']}
-                this.refreshProductsList();
-              }
+              this.firstItem = +params['first'];
+              this.itemsPerPage = +params['limit'];
+              this.sortField = {field: params['sort'], order: params['order']}
+              this.refreshProductsList();
             }
+          }
         }
       });
   }
 
   private refreshProductsList(): void {
     if (!this.productsListMode || !this.itemsPerPage) return;
-    this.dataService.getProducts(this.firstItem, this.itemsPerPage, this.sortField)
+    this.dataService.getProducts(this.productsListMode, this.firstItem, this.itemsPerPage, this.sortField)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: IGetProductsList) => {
           this.products = [...response.products];
           this.totalItems = response.total;
-          const selectedList: Array<number> = this.lsService.getSelectedList();
-          this.products.forEach(p => p.isSelected = selectedList.some(id => p.id === id));
           this.changeDetectorRef.detectChanges();
         },
         error: () => alert('Cann\'t read product list')
@@ -109,12 +112,23 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     return !!legalValues.find(v => v === mode);
   }
 
-  changeProductSelected(product: IProductsListItem, state: {checked: boolean}) {
+  changeProductSelected(product: IProductsListItem, state: { checked: boolean }): void {
     product.isSelected = state.checked;
-    this.lsService.updateSelectedListById(product.id, product.isSelected);
+    this.dataService.updateSelectedListById(product.id, product.isSelected);
     const textMessage = 'The product has been successfully ' +
       (product.isSelected ? 'added to your favorites' : 'removed from the saved');
-    this.messageService.add({key: 'bc', severity:'info', summary: '', detail: textMessage, life: 2500});
+    this.messageService.add({key: 'bc', severity: 'info', summary: '', detail: textMessage, life: 2500});
+  }
+
+  unselectProductClick(product: IProductsListItem): void {
+    this.helperService.confirmAction('deleteProductDialog', 'Are you sure you want to delete the selected product?', 'Unselect product')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isConfirm: boolean) => {
+        if (isConfirm) {
+          this.dataService.updateSelectedListById(product.id, false);
+          this.refreshProductsList();
+        }
+      });
   }
 
   addProductClick(): void {

@@ -19,6 +19,7 @@
         <th style="min-width:8rem" pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
         <th style="min-width:5rem" *ngIf="productsListMode===productsListModeEnum.All">Selected</th>
         <th style="min-width:5rem" *ngIf="productsListMode===productsListModeEnum.All">Actions</th>
+        <th style="min-width:5rem" *ngIf="productsListMode===productsListModeEnum.Selected"></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>
@@ -43,6 +44,9 @@
                       class="p-button-text" icon="pi pi-fw pi-image" iconPos="left"></button>
             </ng-template>
           </p-overlayPanel>
+        </td>
+        <td *ngIf="productsListMode===productsListModeEnum.Selected" [style]="{textAlign: 'center'}">
+          <button pButton type="button" label="Remove from selected" (click)="unselectProductClick(product)" class="p-button-text" ></button>
         </td>
       </tr>
     </ng-template>
