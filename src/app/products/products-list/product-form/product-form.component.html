@@ -1,27 +1,27 @@
-<p-dialog [header]="options.header" [(visible)]="displayModal" [modal]="true" [style]="{width: '50vw'}"
+<p-dialog [header]="options.header" [(visible)]="displayModal" [modal]="true" [style]="{minWidth: '25vw'}"
           [draggable]="false" [resizable]="false" [transitionOptions]="'100ms'" (onHide)="onHideDialog()">
   <form [formGroup]="productForm" autocomplete="off">
-    <div class="field form-control">
+    <div class="form-control">
       <label htmlFor="title-input" class="block">Title*</label>
       <input id="title-input" type="text" pInputText aria-describedby="title-error" formControlName="title">
       <small *ngIf="isInvalidField('title')" id="title-error" class="block">Please fill in all required fields</small>
     </div>
-    <div class="field form-control">
+    <div class="form-control">
       <label htmlFor="price-input" class="block">Price*</label>
       <input id="price-input" type="number" pInputText  aria-describedby="price-error" formControlName="price">
       <small *ngIf="isInvalidField('price')" id="price-error" class="block">Please fill in all required fields</small>
     </div>
-    <div class="field form-control">
+    <div class="form-control">
       <label htmlFor="brand-input" class="block">Brand*</label>
       <input id="brand-input" type="text" pInputText aria-describedby="brand-error" formControlName="brand">
       <small *ngIf="isInvalidField('brand')" id="brand-error" class="block">Please fill in all required fields</small>
     </div>
-    <div class="field form-control">
+    <div class="form-control">
       <label htmlFor="category-input" class="block">Category*</label>
       <input id="category-input" type="text" pInputText aria-describedby="category-error" formControlName="category">
       <small *ngIf="isInvalidField('category')" id="category-error" class="block">Please fill in all required fields</small>
     </div>
-    <div class="field form-control">
+    <div class="form-control">
       <label htmlFor="description-input" class="block">Description</label>
       <textarea id="description-input" pInputTextarea formControlName="description"></textarea>
     </div>

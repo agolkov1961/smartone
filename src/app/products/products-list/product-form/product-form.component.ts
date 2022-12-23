@@ -57,7 +57,7 @@ export class ProductFormComponent implements OnInit,AfterViewInit {
 
   isInvalidField(field: string): boolean {
     const control = this.productForm.get(field);
-    return !!(control?.touched || control?.dirty || this.isButtonSaveClicked) && !control?.valid;
+    return !control?.valid && this.isButtonSaveClicked;
   }
 
   private initForm(): void {
