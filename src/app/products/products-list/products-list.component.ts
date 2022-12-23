@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
+import {ActivatedRoute, NavigationEnd, NavigationStart, Params, Router, RouterEvent} from '@angular/router';
+import {filter, Observable, Subject} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
 import {ProductsListDataService} from './products-list.data-service';
 import {ConfirmationService, LazyLoadEvent} from 'primeng/api';
@@ -16,11 +16,11 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   productsListMode: EProductsListMode | null = null;
   productsListModeEnum: typeof EProductsListMode = EProductsListMode;
   products: Array<IProductsListItem> = [];
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 0;
+  sortField: {field: string, order: 'asc' | 'desc'} = {field: '', order: 'asc'};
   totalItems: number = 0;
   firstItem: number = 0;
   private readonly destroy$: Subject<void> = new Subject();
-  private sortField: {field: string, order: 'asc' | 'desc'} = {field: 'title', order: 'asc'};
   productFormOptions: IProductFormOptions = {header: ''};
   visibleProductForm: boolean = false;
 
@@ -65,19 +65,27 @@ export class ProductsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (params: Params) => {
-          if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
-            ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
-            ['asc', 'desc'].find(s => s === params['order'])) {
-            this.firstItem = +params['first'];
-            this.itemsPerPage = +params['limit'];
-            this.sortField = {field: params['sort'], order: params['order']}
-            this.refreshProductsList();
+          if (+params['limit'] === 0) {
+            this.router.navigate([], {queryParams: { limit: 10}, queryParamsHandling: 'merge'});
+          } else if (!params['sort']) {
+            this.router.navigate([], {queryParams: { sort: 'title'}, queryParamsHandling: 'merge'});
           }
+          else {
+            if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
+              ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
+              ['asc', 'desc'].find(s => s === params['order'])) {
+                this.firstItem = +params['first'];
+                this.itemsPerPage = +params['limit'];
+                this.sortField = {field: params['sort'], order: params['order']}
+                this.refreshProductsList();
+              }
+            }
         }
       });
   }
 
   private refreshProductsList(): void {
+    if (!this.productsListMode || !this.itemsPerPage) return;
     this.dataService.getProducts(this.firstItem, this.itemsPerPage, this.sortField)
       .pipe(takeUntil(this.destroy$))
       .subscribe({

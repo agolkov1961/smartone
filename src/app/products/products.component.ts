@@ -7,7 +7,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsComponent {
-  title = 'Learning of PrimeNG ))';
+  title = 'SmartOne Test';
 
   constructor() { }
 

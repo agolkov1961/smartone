@@ -9,7 +9,7 @@
   <p-table [value]="products" styleClass="p-datatable-gridlines"
            [paginator]="true" [rows]="itemsPerPage" [rowsPerPageOptions]="[5, 10,20]" [totalRecords]="totalItems"
            [(first)]="firstItem" [lazy]="true" (onLazyLoad)="loadProductsLazy($event)"
-           sortMode="single" sortField="title">
+           sortMode="single" [sortField]="sortField.field" [sortOrder]="sortField.order === 'asc' ? 1 : -1">
     <ng-template pTemplate="header">
       <tr>
         <th style="min-width:10rem" pSortableColumn="title">Title <p-sortIcon field="title"></p-sortIcon></th>
