@@ -1,15 +1,22 @@
-<div class="products-list--wrapper" *ngIf="!!productsListMode">
+<div class="products-list--wrapper flex flex-column flex-grow-1" *ngIf="!!productsListMode">
+  <div class="products-list--new-button flex justify-content-end">
+    <button pButton pRipple type="button"
+            (click)="addProductClick()"
+            class="p-button-outlined"
+            label="Product" icon="pi pi-plus" iconPos="left"></button>
+  </div>
+
   <p-table [value]="products" styleClass="p-datatable-gridlines"
            [paginator]="true" [rows]="itemsPerPage" [rowsPerPageOptions]="[5, 10,20]" [totalRecords]="totalItems"
            [(first)]="firstItem" [lazy]="true" (onLazyLoad)="loadProductsLazy($event)"
            sortMode="single" sortField="title">
     <ng-template pTemplate="header">
       <tr>
-        <th style="min-width:15rem" pSortableColumn="title">Title <p-sortIcon field="title"></p-sortIcon></th>
-        <th style="min-width:15rem" pSortableColumn="brand">Brand <p-sortIcon field="brand"></p-sortIcon></th>
-        <th style="min-width:15rem" pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
+        <th style="min-width:10rem" pSortableColumn="title">Title <p-sortIcon field="title"></p-sortIcon></th>
+        <th style="min-width:10rem" pSortableColumn="brand">Brand <p-sortIcon field="brand"></p-sortIcon></th>
+        <th style="min-width:10rem" pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
         <th style="min-width:20rem">Description</th>
-        <th style="min-width:10rem" pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+        <th style="min-width:8rem" pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
         <th style="min-width:5rem" *ngIf="productsListMode===productsListModeEnum.All">Selected</th>
         <th style="min-width:5rem" *ngIf="productsListMode===productsListModeEnum.All">Actions</th>
       </tr>

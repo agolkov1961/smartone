@@ -11,8 +11,4 @@ export class ProductsComponent {
 
   constructor() { }
 
-  handleAddProductButtonClick(): void {
-    console.log('click');
-  }
-
 }

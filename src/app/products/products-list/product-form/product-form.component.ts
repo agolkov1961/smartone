@@ -62,6 +62,7 @@ export class ProductFormComponent implements OnInit,AfterViewInit {
 
   private initForm(): void {
     this.productForm = this.formBuilder.group({
+      id: null,
       title: [null, [Validators.required]],
       brand: [null, [Validators.required]],
       category: [null, [Validators.required]],
@@ -72,6 +73,7 @@ export class ProductFormComponent implements OnInit,AfterViewInit {
 
   private fillForm(product: IProductsListItem): void {
     this.productForm.patchValue({
+      id: product.id,
       title: product.title,
       brand: product.brand,
       category: product.category,

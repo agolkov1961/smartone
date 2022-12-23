@@ -5,11 +5,19 @@
     padding: 10px 15px;
   }
 
-  &--title {
-    font-family: var(--font-family);
-    color: var(--text-color);
+  &--header {
+    &__title {
+      max-width: 1260px;
+      font-family: var(--font-family);
+      color: var(--text-color);
+    }
   }
+
   &--list {
     margin-left: 15px;
+  }
+
+  &--sidebar {
+    padding-top: 55px;
   }
 }

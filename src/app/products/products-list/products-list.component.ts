@@ -96,6 +96,13 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     return !!legalValues.find(v => v === mode);
   }
 
+
+  addProductClick(): void {
+    this.productFormOptions = {header: `New product`};
+    this.visibleProductForm = true;
+    this.changeDetectorRef.detectChanges();
+  }
+
   editProductClick(product: IProductsListItem): void {
     this.productFormOptions = {product, header: `Edit product ${product.title}`};
     this.visibleProductForm = true;
