@@ -4,3 +4,9 @@
     margin-bottom: 10px;
   }
 }
+
+:host::ng-deep {
+  .products-list--message {
+    min-width: 50%;
+  }
+}

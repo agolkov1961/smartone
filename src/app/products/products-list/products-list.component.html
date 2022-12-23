@@ -28,7 +28,9 @@
         <td>{{product.category}}</td>
         <td>{{product.description}}</td>
         <td>{{product.price}}</td>
-        <td *ngIf="productsListMode===productsListModeEnum.All">{{product.isSelected}}</td>
+        <td *ngIf="productsListMode===productsListModeEnum.All" [style]="{textAlign: 'center'}">
+          <p-checkbox [ngModel]="product.isSelected" [binary]="true" (onChange)="changeProductSelected(product, $event)"></p-checkbox>
+        </td>
         <td *ngIf="productsListMode===productsListModeEnum.All">
           <button pButton type="button" label="..." (click)="opAction.toggle($event)" class="p-button-text"></button>
           <p-overlayPanel #opAction [showCloseIcon]="false" [style]="{width: '190px'}">
@@ -48,6 +50,6 @@
 </div>
 
 <p-confirmDialog [style]="{width: '40vw'}" key="deleteProductDialog" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
-
+<p-toast position="bottom-center" key="bc" styleClass="products-list--message"></p-toast>
 <app-product-form *ngIf="visibleProductForm" [options]="productFormOptions" (save)="saveProduct($event)" (hide)="hideDialog()"></app-product-form>
 

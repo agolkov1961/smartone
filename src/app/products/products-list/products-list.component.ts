@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, NavigationStart, Params, Router, RouterEvent} from '@angular/router';
-import {filter, Observable, Subject} from 'rxjs';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Observable, Subject} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
-import {ProductsListDataService} from './products-list.data-service';
-import {ConfirmationService, LazyLoadEvent} from 'primeng/api';
+import {ConfirmationService, LazyLoadEvent, MessageService} from 'primeng/api';
 import {takeUntil, tap} from 'rxjs/operators';
+import {ProductsListLocalStorageService} from './products-list.ls-service';
+import {ProductsListDataService} from './products-list.data-service';
 
 @Component({
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.scss'],
-  providers: [ProductsListDataService],
+  providers: [MessageService, ProductsListDataService, ProductsListLocalStorageService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent implements OnInit, OnDestroy {
@@ -28,7 +29,9 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: ProductsListDataService,
+    private lsService: ProductsListLocalStorageService,
     private confirmationService: ConfirmationService,
+    private messageService: MessageService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -92,6 +95,8 @@ export class ProductsListComponent implements OnInit, OnDestroy {
         next: (response: IGetProductsList) => {
           this.products = [...response.products];
           this.totalItems = response.total;
+          const selectedList: Array<number> = this.lsService.getSelectedList();
+          this.products.forEach(p => p.isSelected = selectedList.some(id => p.id === id));
           this.changeDetectorRef.detectChanges();
         },
         error: () => alert('Cann\'t read product list')
@@ -104,6 +109,13 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     return !!legalValues.find(v => v === mode);
   }
 
+  changeProductSelected(product: IProductsListItem, state: {checked: boolean}) {
+    product.isSelected = state.checked;
+    this.lsService.updateSelectedListById(product.id, product.isSelected);
+    const textMessage = 'The product has been successfully ' +
+      (product.isSelected ? 'added to your favorites' : 'removed from the saved');
+    this.messageService.add({key: 'bc', severity:'info', summary: '', detail: textMessage, life: 2500});
+  }
 
   addProductClick(): void {
     this.productFormOptions = {header: `New product`};
@@ -173,7 +185,9 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   setImageClick(product: IProductsListItem): void {
-    console.log(product);
-    alert('not implemented yet')
+    alert('Ничего не понятно, что делать.\nНи в доке сервера ни в задании ни слова про Base64, например.\n' +
+      'Как отдавать "серверу" контент выбранного файла?\n' +
+      'Роуты в API есть, но в боди только джейсон с именем файла...\n' +
+      'Я для приаттачивания картинки выберу файл использовав input cоответствующего типа и с hidden-стилем, затем прочитаю контент, а дальше ? ')
   }
 }

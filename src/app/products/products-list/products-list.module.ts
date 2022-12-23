@@ -7,9 +7,11 @@ import { ButtonModule} from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule} from 'primeng/dialog';
 import { ProductFormComponent } from './product-form/product-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,10 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     DialogModule,
     ReactiveFormsModule,
     InputNumberModule,
-    InputTextareaModule
+    InputTextareaModule,
+    CheckboxModule,
+    FormsModule,
+    ToastModule
   ],
   exports: [ProductsListComponent]
 })
