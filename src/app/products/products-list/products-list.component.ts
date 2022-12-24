@@ -1,6 +1,14 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
+import {finalize, Observable, Subject} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
 import {ConfirmationService, LazyLoadEvent, MessageService} from 'primeng/api';
 import {takeUntil, tap} from 'rxjs/operators';
@@ -25,6 +33,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<void> = new Subject();
   productFormOptions: IProductFormOptions = {header: ''};
   visibleProductForm: boolean = false;
+  @ViewChild('inputImageFile', {static: false}) inputImageFile: ElementRef | undefined;
 
   constructor(
     private router: Router,
@@ -198,10 +207,25 @@ export class ProductsListComponent implements OnInit, OnDestroy {
       });
   }
 
+  private currentProductId: number | undefined;
+
   setImageClick(product: IProductsListItem): void {
-    alert('Ничего не понятно, что делать.\nНи в доке сервера ни в задании ни слова про Base64, например.\n' +
-      'Как отдавать "серверу" контент выбранного файла?\n' +
-      'Роуты в API есть, но в боди только джейсон с именем файла...\n' +
-      'Я для приаттачивания картинки выберу файл использовав input cоответствующего типа и с hidden-стилем, затем прочитаю контент, а дальше ? ')
+    this.currentProductId = product.id;
+    this.inputImageFile?.nativeElement.click();
   }
+
+  changeImageFile(event: any): void {
+    const files: Array<File> = event.target?.files;
+    if (files.length === 1 && this.currentProductId) {
+      this.dataService.setProductImage(this.currentProductId, files[0].name)
+        .pipe(
+          finalize(() => this.currentProductId = undefined),
+          takeUntil(this.destroy$)
+        ).subscribe({
+        next: () => this.refreshProductsList(),
+        error: () => alert('Cann\'t set image for product')
+      });
+    }
+  }
+
 }

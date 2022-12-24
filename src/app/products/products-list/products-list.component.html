@@ -12,6 +12,7 @@
            sortMode="single" [sortField]="sortField.field" [sortOrder]="sortField.order === 'asc' ? 1 : -1">
     <ng-template pTemplate="header">
       <tr>
+        <th style="min-width:4rem">Image</th>
         <th style="min-width:10rem" pSortableColumn="title">Title <p-sortIcon field="title"></p-sortIcon></th>
         <th style="min-width:10rem" pSortableColumn="brand">Brand <p-sortIcon field="brand"></p-sortIcon></th>
         <th style="min-width:10rem" pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
@@ -24,6 +25,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-product>
       <tr>
+        <td><img *ngIf="product.image" class="product-image" [src]="'https://backend-for-applicants.smartoneclub.com' + product.image" /></td>
         <td>{{product.title}}</td>
         <td>{{product.brand}}</td>
         <td>{{product.category}}</td>
@@ -53,7 +55,11 @@
   </p-table>
 </div>
 
-<p-confirmDialog [style]="{width: '40vw'}" key="deleteProductDialog" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
+<p-confirmDialog [style]="{width: '40vw'}" key="deleteProductDialog" [baseZIndex]="10000" styleClass="p-button-text"></p-confirmDialog>
+
 <p-toast position="bottom-center" key="bc" styleClass="products-list--message"></p-toast>
+
+<input #inputImageFile type="file" [style]="{display: 'none'}" accept="image/png, image/jpeg" id="fileInput" (change)="changeImageFile($event)">
+
 <app-product-form *ngIf="visibleProductForm" [options]="productFormOptions" (save)="saveProduct($event)" (hide)="hideDialog()"></app-product-form>
 
