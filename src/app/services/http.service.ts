@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable({
@@ -7,6 +7,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 })
 export class HttpService {
   private site: string = 'https://backend-for-applicants.smartoneclub.com'
+
   public constructor(private http: HttpClient) {}
 
   public get(url: string): Observable<any> {
