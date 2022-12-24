@@ -5,7 +5,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit, Output
+  OnInit,
+  Output
 } from '@angular/core';
 import {IProductFormOptions, IProductsListItem} from '../products-list.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -16,7 +17,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['./product-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductFormComponent implements OnInit,AfterViewInit {
+export class ProductFormComponent implements OnInit, AfterViewInit {
   @Input() options: IProductFormOptions = {header: ''};
   @Output() save: EventEmitter<IProductsListItem> = new EventEmitter();
   @Output() hide: EventEmitter<void> = new EventEmitter();

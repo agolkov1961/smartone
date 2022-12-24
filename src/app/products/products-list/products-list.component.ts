@@ -147,7 +147,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   editProductClick(product: IProductsListItem): void {
-    this.productFormOptions = {product, header: `Edit product ${product.title}`};
+    this.productFormOptions = {product, header: `Edit product '${product.title}'`};
     this.visibleProductForm = true;
     this.changeDetectorRef.detectChanges();
   }
@@ -172,13 +172,13 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   deleteProductClick(product: IProductsListItem): void {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected product?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'deleteProductDialog',
-      accept: () => this.deleteProduct(product.id)
-    });
+    this.helperService.confirmAction('deleteProductDialog', 'Are you sure you want to delete the selected product?', 'Delete Confirmation')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isConfirm: boolean) => {
+        if (isConfirm) {
+          this.deleteProduct(product.id);
+        }
+      });
   }
 
   private deleteProduct(id: number): void {

@@ -62,7 +62,8 @@ export class ProductsListDataService {
   setProductImage(id: number, name: string): Observable<void> {
     const formData = new FormData();
     // formData.append('file', `file=@"${name}"`);
-    formData.append('file', `@"${name}"`);
+    // formData.append('file', `@"${name}"`);
+    formData.append('file', `c:/Users/Gav/Downloads/${name}`);
     return this.httpService.post(`product/${id}/image`, formData);
   }
 }

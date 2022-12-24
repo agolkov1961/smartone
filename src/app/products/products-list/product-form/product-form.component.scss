@@ -3,6 +3,23 @@
   margin-bottom: 10px;
   input, textarea {
     width: 100%;
+  }
+
+  input {
+    border-radius: 5px;
+    height: 30px;
+    border-width: 0.5px;
+    border-color: rgb(206,212,218);
+  }
+
+  textarea {
     max-height: 50px;
+  }
+
+}
+
+:host::ng-deep {
+  .p-dialog .p-dialog-header .p-dialog-title {
+    color: var(--primary-color);
   }
 }
