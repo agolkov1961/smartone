@@ -3,7 +3,7 @@ import {map, Observable} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductsListItem} from '../products-list.model';
 import {HttpService} from '../../../services/http.service';
 import {ProductsListLocalStorageService} from './products-list.ls-service';
-import {HttpHeaders} from '@angular/common/http';
+
 
 @Injectable()
 export class ProductsListDataService {
@@ -59,11 +59,9 @@ export class ProductsListDataService {
     return this.httpService.delete(`product/${id}`);
   }
 
-  setProductImage(id: number, name: string): Observable<void> {
+  setProductImage(id: number, file: File): Observable<void> {       // !!!!!!!!!!!!!!
     const formData = new FormData();
-    // formData.append('file', `file=@"${name}"`);
-    // formData.append('file', `@"${name}"`);
-    formData.append('file', `c:/Users/Gav/Downloads/${name}`);
+    formData.append('file', file, file.name);
     return this.httpService.post(`product/${id}/image`, formData);
   }
 }

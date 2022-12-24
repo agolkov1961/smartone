@@ -217,7 +217,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   changeImageFile(event: any): void {
     const files: Array<File> = event.target?.files;
     if (files.length === 1 && this.currentProductId) {
-      this.dataService.setProductImage(this.currentProductId, files[0].name)
+      this.dataService.setProductImage(this.currentProductId, files[0])
         .pipe(
           finalize(() => this.currentProductId = undefined),
           takeUntil(this.destroy$)
