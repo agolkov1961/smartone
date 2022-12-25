@@ -7,8 +7,8 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {finalize, Observable, Subject} from 'rxjs';
+import {ActivatedRoute, NavigationEnd, Params, Router, RouterEvent} from '@angular/router';
+import {filter, finalize, Observable, Subject} from 'rxjs';
 import {EProductsListMode, IGetProductsList, IProductFormOptions, IProductsListItem} from './products-list.model';
 import {ConfirmationService, LazyLoadEvent, MessageService} from 'primeng/api';
 import {takeUntil, tap} from 'rxjs/operators';
@@ -47,6 +47,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.listenRouter();
+    this.checkSkipedParameters();
   }
 
   ngOnDestroy(): void {
@@ -67,38 +68,92 @@ export class ProductsListComponent implements OnInit, OnDestroy {
   }
 
   private listenRouter(): void {
-    this.activatedRoute.params
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (params: Params) => {
-          if (this.isLegalMode(params['mode'])) {
-            this.productsListMode = params['mode'];
-            this.refreshProductsList();
-          } else {
-            this.router.navigate(['/page404']);
-          }
-        }
-      });
-    this.activatedRoute.queryParams
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (params: Params) => {
-          if (+params['limit'] === 0) {
+    // this.activatedRoute.params
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe({
+    //     next: (params: Params) => {
+    //       if (this.isLegalMode(params['mode'])) {
+    //         this.productsListMode = params['mode'];
+    //         this.refreshProductsList();
+    //       } else {
+    //         this.router.navigate(['/page404']);
+    //       }
+    //     }
+    //   });
+    // this.activatedRoute.queryParams
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe({
+    //     next: (params: Params) => {
+    //       if (+params['limit'] === 0) {
+    //         this.router.navigate([], {queryParams: {limit: 10}, queryParamsHandling: 'merge'});
+    //       } else if (!params['sort']) {
+    //         this.router.navigate([], {queryParams: {sort: 'title'}, queryParamsHandling: 'merge'});
+    //       } else {
+    //         if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
+    //           ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
+    //           ['asc', 'desc'].find(s => s === params['order'])) {
+    //           this.firstItem = +params['first'];
+    //           this.itemsPerPage = +params['limit'];
+    //           this.sortField = {field: params['sort'], order: params['order']}
+    //           this.refreshProductsList();
+    //         }
+    //       }
+    //     }
+    //   });
+    //
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      ).subscribe({
+      next: () => {
+        const params: Params = this.activatedRoute.snapshot.params;
+        const queryParams: Params = this.activatedRoute.snapshot.queryParams;
+        if (this.isLegalParameters(params, queryParams)) {
+          this.productsListMode = params['mode'];
+          this.firstItem = +queryParams['first'];
+          this.itemsPerPage = +queryParams['limit'];
+          this.sortField = {field: queryParams['sort'], order: queryParams['order']}
+          this.refreshProductsList();
+          if (+queryParams['limit'] === 0) {
             this.router.navigate([], {queryParams: {limit: 10}, queryParamsHandling: 'merge'});
-          } else if (!params['sort']) {
-            this.router.navigate([], {queryParams: {sort: 'title'}, queryParamsHandling: 'merge'});
-          } else {
-            if (!isNaN(+params['first']) && !isNaN(+params['limit']) &&
-              ['title', 'brand', 'category', 'price'].find(s => s === params['sort']) &&
-              ['asc', 'desc'].find(s => s === params['order'])) {
-              this.firstItem = +params['first'];
-              this.itemsPerPage = +params['limit'];
-              this.sortField = {field: params['sort'], order: params['order']}
-              this.refreshProductsList();
-            }
           }
+        } else {
+          this.router.navigate(['/page404']);
         }
+      }
+    });
+  }
+
+  private checkSkipedParameters(): void {
+    const params: Params = this.activatedRoute.snapshot.params;
+    const queryParams: Params = this.activatedRoute.snapshot.queryParams;
+    if (!params['mode'] ||
+      ['first', 'limit', 'order', 'sort'].some(p => queryParams[p] === null || queryParams[p] === undefined) ||
+      +queryParams['limit'] === 0) {
+      this.router.navigate(['/products/all'], {
+        queryParams: {first: '0', limit: '10', sort: 'title', 'order': 'asc'},
+        queryParamsHandling: 'merge'
       });
+    } else if (this.isLegalParameters(params, queryParams)){
+      this.productsListMode = params['mode'];
+      this.firstItem = +queryParams['first'];
+      this.itemsPerPage = +queryParams['limit'];
+      this.sortField = {field: queryParams['sort'], order: queryParams['order']}
+      this.refreshProductsList();
+    } else {
+      this.router.navigate(['/page404']);
+    }
+  }
+
+  private isLegalParameters(params: Params, queryParams: Params): boolean {
+
+    const legalModeValues: Array<string> = Object.values(this.productsListModeEnum);
+    if (!legalModeValues.find(v => v === params['mode']) || +queryParams['limit'] === 0) return false;
+
+    return !isNaN(+queryParams['first']) && !isNaN(+queryParams['limit']) &&
+      !!['title', 'brand', 'category', 'price'].find(s => s === queryParams['sort']) &&
+      !!['asc', 'desc'].find(s => s === queryParams['order']);
   }
 
   private refreshProductsList(): void {
@@ -113,12 +168,6 @@ export class ProductsListComponent implements OnInit, OnDestroy {
         },
         error: () => alert('Cann\'t read product list')
       });
-  }
-
-  private isLegalMode(mode: string): boolean {
-    if (!mode) return true;
-    const legalValues: Array<string> = Object.values(this.productsListModeEnum);
-    return !!legalValues.find(v => v === mode);
   }
 
   changeProductSelected(product: IProductsListItem, state: { checked: boolean }): void {

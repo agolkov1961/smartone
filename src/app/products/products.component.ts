@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Params} from '@angular/router';
 
 @Component({
   selector: 'app-products',
@@ -8,7 +9,4 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 })
 export class ProductsComponent {
   title = 'SmartOne Test';
-
-  constructor() { }
-
 }

@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ProductsListComponent } from './products-list/products-list.component';
-import { ProductsComponent } from './products.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {ProductsListComponent} from './products-list/products-list.component';
+import {ProductsComponent} from './products.component';
 
 const routes: Routes = [
   {
@@ -17,14 +17,6 @@ const routes: Routes = [
         path: ':mode',
         component: ProductsListComponent,
       },
-      // {
-      //   path: 'all',
-      //   component: ProductsListComponent,
-      // },
-      // {
-      //   path: 'selected',
-      //   component: ProductsListComponent,
-      // }
     ]
   }
 ];
@@ -33,4 +25,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ProductsRoutingModule { }
+export class ProductsRoutingModule {}
